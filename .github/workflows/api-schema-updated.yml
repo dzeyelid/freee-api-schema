@@ -1,0 +1,26 @@
+name: Notify API schema updates
+
+on:
+  release:
+    types:
+      - released
+
+env:
+  EVENT_TYPE: api-schema-updated
+  REPOSITORY_ACCOUNTING_SDK_JAVA: dzeyelid/freee-accounting-sdk-java
+
+jobs:
+  notify_to_accounting_sdk_java:
+    name: Notify to accouting SDK for Java
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository dispatch
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/:repo/dispatches
+          repo: ${{ env.REPOSITORY_ACCOUNTING_SDK_JAVA }}
+          event_type: ${{ env.EVENT_TYPE }}
+          client_payload: |
+            origin_ref: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCOUNTING_SDK_JAVA_ACCESS_TOKEN }}
